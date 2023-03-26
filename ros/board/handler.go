@@ -158,7 +158,7 @@ func (h *Handler) DeleteBoard(c *fiber.Ctx) error {
 	// Find board in database
 	board := &Board{}
 	if err := h.db.Where("uuid = ?", uuidParam).First(&board).Error; err != nil {
-		return err
+		return fiber.ErrNotFound
 	}
 
 	// Delete board from database
