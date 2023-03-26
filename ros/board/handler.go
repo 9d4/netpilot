@@ -90,12 +90,9 @@ func (h *Handler) GetAllBoards(c *fiber.Ctx) error {
 
 	response := BoardsResponse{}
 	for _, board := range boards {
-		response.Boards = append(response.Boards, struct {
-			UUID string `json:"uuid"`
-			Host string `json:"host"`
-			Port string `json:"port"`
-		}{
+		response.Boards = append(response.Boards, BoardsEachResponse{
 			UUID: board.UUID,
+			Name: board.Name,
 			Host: board.Host,
 			Port: board.Port,
 		})
