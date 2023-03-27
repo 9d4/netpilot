@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 const layout = useDashLayout();
 
+useHead({
+  title: "Boards"
+})
+
 const { data, error } = useApi("boards");
 </script>
 
