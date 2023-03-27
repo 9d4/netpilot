@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/9d4/netpilot/database"
 	"github.com/9d4/netpilot/ros/board"
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +15,6 @@ func Start(config *Config) {
 	app := fiber.New()
 	applyRoutes(app)
 
-	fmt.Println(config.v.GetString("ADDRESS"))
 	checkError(app.Listen(config.v.GetString("ADDRESS")))
 }
 

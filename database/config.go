@@ -7,3 +7,9 @@ type Config struct {
 	Username string
 	Password string
 }
+
+type RedisConfig struct {
+	Address  string
+	Password string
+	DB       int
+}

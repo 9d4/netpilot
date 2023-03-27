@@ -25,7 +25,16 @@ var rootCmd = &cobra.Command{
 			Password: v.GetString("DB_PASSWORD"),
 		})
 		if err != nil {
-			return
+			jww.FATAL.Fatal(err)
+		}
+
+		_, err = database.ConnectRedis(&database.RedisConfig{
+			Address:  v.GetString("REDIS_ADDRESS"),
+			Password: v.GetString("REDIS_PASSWORD"),
+			DB:       v.GetInt("REDIS_DB"),
+		})
+		if err != nil {
+			jww.FATAL.Fatal(err)
 		}
 
 		server.Start(server.NewConfig(v))
