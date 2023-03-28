@@ -1,7 +1,11 @@
 package board
 
 import (
+	"crypto/tls"
+	"github.com/9d4/netpilot/database"
+	"github.com/go-resty/resty/v2"
 	"gorm.io/gorm"
+	"net/url"
 	"time"
 )
 
@@ -50,4 +54,42 @@ type BoardsEachResponse struct {
 	Name string `json:"name"`
 	Host string `json:"host"`
 	Port string `json:"port"`
+}
+
+// cli returns new *resty.Client
+func (b *Board) cli() *resty.Client {
+	cli := resty.New()
+	cli.SetTLSClientConfig(&tls.Config{
+		InsecureSkipVerify: b.InsecureSkipVerify,
+	})
+	cli.SetTimeout(time.Second * 10)
+
+	return cli
+}
+
+func restUrl(b *Board, path ...string) string {
+	u := &url.URL{
+		Scheme: "https",
+		Opaque: "",
+		User:   url.UserPassword(b.User, b.Password),
+		Host:   b.Host + ":" + b.Port,
+		Path:   "/rest",
+	}
+	u = u.JoinPath(path...)
+
+	return u.String()
+}
+
+func RunTask() {
+	store := NewBoardStore(database.DB())
+	boards, err := store.FindAll()
+	if err != nil {
+		return
+	}
+	boards_ = boards
+
+	for _, b := range boards {
+		//fmt.Println(b)
+		go fetchSystemResource(b)
+	}
 }

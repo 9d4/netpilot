@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/9d4/netpilot/database"
 	"github.com/9d4/netpilot/server"
+	"github.com/9d4/netpilot/worker"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	jww "github.com/spf13/jwalterweatherman"
@@ -37,6 +38,7 @@ var rootCmd = &cobra.Command{
 			jww.FATAL.Fatal(err)
 		}
 
+		worker.RunBoardWorker()
 		server.Start(server.NewConfig(v))
 	},
 }
