@@ -2,10 +2,10 @@
 const layout = useDashLayout();
 
 useHead({
-  title: "Boards"
-})
+  title: "Boards",
+});
 
-const { data, error } = useApi("boards");
+const { boards } = useBoard();
 </script>
 
 <template>
@@ -13,12 +13,9 @@ const { data, error } = useApi("boards");
     <div class="prose mb-4">
       <h1>Boards</h1>
     </div>
-    <div v-if="error">
-      {{ error }}
-    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <div
-        v-for="board in data?.boards"
+        v-for="board in boards"
         :key="board.uuid"
         class="bg-base-300 shadow rounded-lg p-6"
       >
