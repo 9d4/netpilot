@@ -81,15 +81,18 @@ func restUrl(b *Board, path ...string) string {
 }
 
 func RunTask() {
-	store := NewBoardStore(database.DB())
-	boards, err := store.FindAll()
-	if err != nil {
-		return
-	}
-	boards_ = boards
+	go func() {
+		store := NewBoardStore(database.DB())
+		boards, err := store.FindAll()
+		if err != nil {
+			return
+		}
+		boards_ = boards
 
-	for _, b := range boards {
-		//fmt.Println(b)
+		time.Sleep(5 * time.Second)
+	}()
+
+	for _, b := range boards_ {
 		go fetchSystemResource(b)
 	}
 }

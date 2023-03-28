@@ -7,12 +7,12 @@ import (
 	"net"
 )
 
-const BoardKeyPrefix = "board:"
+const KeyPrefix = "board:"
 
 func fetchSystemResource(b *Board) {
 	cli := b.cli()
 
-	recordKey := BoardKeyPrefix + b.UUID + ":status"
+	recordKey := KeyPrefix + b.UUID + ":status"
 	res, err := cli.R().Get(restUrl(b, "/system/resource"))
 	if err != nil {
 		if ne, ok := err.(net.Error); ok && ne.Timeout() {
@@ -29,10 +29,7 @@ func fetchSystemResource(b *Board) {
 		return
 	}
 
-	recordKey = BoardKeyPrefix + b.UUID + ":system/resource"
+	recordKey = KeyPrefix + b.UUID + ":system/resource"
 	database.RedisCli().Set(context.Background(), recordKey, res.Body(), redis.KeepTTL)
 	database.RedisCli().Publish(context.Background(), "system/resource", res.Body())
-
-	//recordKey := BoardKeyPrefix + b.UUID
-	//fmt.Printf("%s%+v", recordKey, sysRes)
 }
