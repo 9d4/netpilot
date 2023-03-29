@@ -108,7 +108,7 @@ func (h *Handler) GetBoardByUUID(c *fiber.Ctx) error {
 	// Find board in database
 	board := &Board{}
 	if err := h.db.Where("uuid = ?", uuid).First(&board).Error; err != nil {
-		return err
+		return fiber.ErrNotFound
 	}
 
 	return c.JSON(board)
