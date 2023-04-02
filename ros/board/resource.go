@@ -31,5 +31,5 @@ func fetchSystemResource(b *Board) {
 
 	recordKey = KeyPrefix + b.UUID + ":system/resource"
 	database.RedisCli().Set(context.Background(), recordKey, res.Body(), redis.KeepTTL)
-	database.RedisCli().Publish(context.Background(), "system/resource", res.Body())
+	database.RedisCli().Publish(context.Background(), "ch:"+recordKey, res.Body())
 }

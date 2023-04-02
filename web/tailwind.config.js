@@ -1,18 +1,19 @@
 /** @type {import('tailwindcss').Config} */
+// eslint-disable-next-line no-undef
 module.exports = {
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./nuxt.config.{js,ts}",
-    "./app.vue",
+    './src/**/*.html',
+    './src/**/*.{js,ts,jsx,tsx,vue}',
   ],
   theme: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require("daisyui")
-  ],
+  // eslint-disable-next-line no-undef
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: [
+      'night',
+    ]
+  }
 }
+

@@ -1,10 +1,11 @@
+<script lang="ts" setup>
+import SelectBoardDropdown from './SelectBoardDropdown.vue'
+</script>
+
 <template>
   <div class="navbar bg-base-100">
     <div class="flex-none">
-      <label
-        for="drawer"
-        class="btn btn-square btn-ghost lg:hidden drawer-button"
-      >
+      <label for="drawer" class="btn btn-square btn-ghost lg:hidden drawer-button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -20,7 +21,9 @@
         </svg>
       </label>
     </div>
-    <div class="flex-1" />
+    <div class="flex-1">
+      <SelectBoardDropdown />
+    </div>
     <div class="flex-none">
       <button class="btn btn-square btn-ghost">
         <svg

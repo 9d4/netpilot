@@ -88,9 +88,9 @@ func (h *Handler) GetAllBoards(c *fiber.Ctx) error {
 		return err
 	}
 
-	response := BoardsResponse{}
+	var response []BoardsEachResponse
 	for _, board := range boards {
-		response.Boards = append(response.Boards, BoardsEachResponse{
+		response = append(response, BoardsEachResponse{
 			UUID: board.UUID,
 			Name: board.Name,
 			Host: board.Host,
