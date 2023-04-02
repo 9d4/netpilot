@@ -6,7 +6,11 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,vue}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      }
+    },
   },
   // eslint-disable-next-line no-undef
   plugins: [require('daisyui')],
