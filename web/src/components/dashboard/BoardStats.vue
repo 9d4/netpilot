@@ -26,36 +26,48 @@ watch(wsData, (d) => {
   }
 })
 
-const memUsage = computed(() => {
-  const free: number = parseInt(data.value['free-memory'])
-  const total: number = parseInt(data.value['total-memory'])
-  const usage = ((total - free) / total) * 100
-  return usage.toFixed(0)
+const ram = computed(() => {
+  // convert to MiB
+  const free: number = parseInt(data.value['free-memory']) / 1.049e6
+  const total: number = parseInt(data.value['total-memory']) / 1.049e6
+  const usage = total - free
+
+  return {
+    free: free.toFixed(0),
+    total: total.toFixed(0),
+    usage: usage.toFixed(0),
+    usePer: ((usage / total) * 100).toFixed(0)
+  }
 })
 
-const memFree = computed(() => {
-  const free: number = parseInt(data.value['free-memory'])
-  const total: number = parseInt(data.value['total-memory'])
-  const usage = (free / total) * 100
-  return usage.toFixed(0)
+const hdd = computed(() => {
+  const free: number = parseInt(data.value['free-hdd-space']) / 1.049e6
+  const total: number = parseInt(data.value['total-hdd-space']) / 1.049e6
+  const usage = total - free
+  return {
+    free: free.toFixed(0),
+    total: total.toFixed(0),
+    usage: usage.toFixed(0),
+    usePer: ((usage / total) * 100).toFixed(0)
+  }
 })
 </script>
 
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
-    <div class="card p-4 shadow-lg">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+    <div class="card card-bordered card-compact shadow-lg bg-base-300 rounded-sm">
       <div class="card-body">
-        <h2 class="text-lg font-medium">Board Information</h2>
-        <div class="flex flex-col">
-          <div class="flex justify-between my-2">
+        <div class="card-title text-lg">Board Information</div>
+        <div class="flex flex-col leading-3">
+          <div class="flex justify-between my-1">
             <span>Board Name</span>
             <span>{{ data['board-name'] }}</span>
           </div>
-          <div class="flex justify-between my-2">
+          <div class="flex justify-between my-1">
             <span>Uptime</span>
             <span>{{ data.uptime }}</span>
           </div>
-          <div class="flex justify-between my-2">
+          <div class="flex justify-between my-1">
             <span>Version</span>
             <span>{{ data.version }}</span>
           </div>
@@ -63,54 +75,78 @@ const memFree = computed(() => {
       </div>
     </div>
 
-    <div class="card p-4 shadow-lg">
+    <div class="card card-bordered card-compact shadow-lg bg-base-300 rounded-sm">
       <div class="card-body">
-        <h2 class="text-lg font-medium">CPU Usage</h2>
-        <div class="flex flex-col">
-          <div class="flex justify-between my-2">
-            <span>CPU Load</span>
-            <span>{{ data['cpu-load'] }}</span>
+        <h2 class="card-title text-lg">CPU Usage</h2>
+        <div class="flex items-center">
+          <div class="flex-1 flex flex-col leading-3">
+            <div class="flex justify-between my-1">
+              <span>Load</span>
+              <span>{{ data['cpu-load'] }}%</span>
+            </div>
+            <div class="flex justify-between my-1">
+              <span>Count</span>
+              <span>{{ data['cpu-count'] }}</span>
+            </div>
+            <div class="flex justify-between my-1">
+              <span>Freq.</span>
+              <span>{{ data['cpu-frequency'] }} <span class="text-secondary">MHz</span></span>
+            </div>
           </div>
-          <div class="flex justify-between my-2">
-            <span>CPU Count</span>
-            <span>{{ data['cpu-count'] }}</span>
+          <div class="ml-5">
+            <div class="radial-progress" :style="{ '--value': data['cpu-load'] }">
+              {{ data['cpu-load'] }}%
+            </div>
           </div>
-          <div class="flex justify-between my-2">
-            <span>CPU Frequency</span>
-            <span>{{ data['cpu-frequency'] }}</span>
-          </div>
-        </div>
-        <div class="mt-4">
-          <progress class="progress progress-primary" :value="data['cpu-load']" max="100" />
         </div>
       </div>
     </div>
 
-    <div class="card p-4 shadow-lg">
+    <div class="card card-bordered card-compact shadow-lg bg-base-300 rounded-sm">
       <div class="card-body">
-        <h2 class="text-lg font-medium">Memory Usage</h2>
-        <div class="flex flex-col">
-          <div class="flex justify-between my-2">
-            <span>Total Memory</span>
-            <span>{{ data['total-memory'] }}</span>
+        <div class="card-title text-lg">Memory Usage</div>
+        <div class="flex items-center">
+          <div class="flex-1 flex flex-col leading-3">
+            <div class="flex justify-between my-1">
+              <span>Free</span>
+              <span>{{ ram.free }} <span class="text-secondary">MiB</span></span>
+            </div>
+            <div class="flex justify-between my-1">
+              <span>Used</span>
+              <span>{{ ram.usage }} <span class="text-secondary">MiB</span></span>
+            </div>
+            <div class="flex justify-between my-1">
+              <span>Total</span>
+              <span>{{ ram.total }} <span class="text-secondary">MiB</span></span>
+            </div>
           </div>
-          <div class="flex justify-between my-2">
-            <span>Free Memory</span>
-            <span>{{ data['free-memory'] }}</span>
+          <div class="ml-5">
+            <div class="radial-progress" :style="{ '--value': ram.usePer }">{{ ram.usePer }}%</div>
           </div>
         </div>
-        <div class="mt-4 flex justify-center gap-10">
-          <div class="flex flex-col items-center">
-            <div class="radial-progress text-primary" :style="{ '--value': memUsage }">
-              {{ memUsage }}%
+      </div>
+    </div>
+
+    <div class="card card-bordered card-compact shadow-lg bg-base-300 rounded-sm">
+      <div class="card-body">
+        <div class="card-title text-lg">Storage Usage</div>
+        <div class="flex items-center">
+          <div class="flex-1 flex flex-col leading-3">
+            <div class="flex justify-between my-1">
+              <span>Free</span>
+              <span>{{ hdd.free }} <span class="text-secondary">MiB</span></span>
             </div>
-            <span class="mt-2">Usage</span>
+            <div class="flex justify-between my-1">
+              <span>Used</span>
+              <span>{{ hdd.usage }} <span class="text-secondary">MiB</span></span>
+            </div>
+            <div class="flex justify-between my-1">
+              <span>Total</span>
+              <span>{{ hdd.total }} <span class="text-secondary">MiB</span></span>
+            </div>
           </div>
-          <div class="flex flex-col items-center">
-            <div class="radial-progress text-primary" :style="{ '--value': memFree }">
-              {{ memFree }}%
-            </div>
-            <span class="mt-2">Free</span>
+          <div class="ml-5">
+            <div class="radial-progress" :style="{ '--value': hdd.usePer }">{{ hdd.usePer }}%</div>
           </div>
         </div>
       </div>
