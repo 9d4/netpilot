@@ -43,7 +43,7 @@ func Test_keyPrefix_GetStatus(t *testing.T) {
 		want string
 	}{
 		{
-			name: "GetStatus (uuid-100-000)",
+			name: "Status (uuid-100-000)",
 			k:    "stuff:",
 			args: args{uuid: "uuid-100-000"},
 			want: "stuff:uuid-100-000:status",
@@ -51,8 +51,8 @@ func Test_keyPrefix_GetStatus(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.k.GetStatus(tt.args.uuid); got != tt.want {
-				t.Errorf("GetStatus() = %v, want %v", got, tt.want)
+			if got := tt.k.Status(tt.args.uuid); got != tt.want {
+				t.Errorf("Status() = %v, want %v", got, tt.want)
 			}
 		})
 	}

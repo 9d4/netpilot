@@ -4,6 +4,10 @@ package prefix
 
 import "fmt"
 
+const (
+	BoardPrefix keyPrefix = "board:"
+)
+
 type keyPrefix string
 
 // Get concat prefix with uuid and attributes
@@ -19,10 +23,6 @@ func (k keyPrefix) Get(uuid string, attributes ...string) string {
 	return fmt.Sprintf("%s%s%s", k, uuid, attrs)
 }
 
-func (k keyPrefix) GetStatus(uuid string) string {
+func (k keyPrefix) Status(uuid string) string {
 	return k.Get(uuid, "status")
 }
-
-const (
-	BoardPrefix keyPrefix = "board:"
-)
