@@ -1,8 +1,12 @@
 package board
 
 import (
+	"bytes"
+	"context"
 	"crypto/tls"
+	"encoding/json"
 	"github.com/9d4/netpilot/database"
+	p "github.com/9d4/netpilot/internal/prefix"
 	"github.com/go-resty/resty/v2"
 	"gorm.io/gorm"
 	"net/url"
@@ -67,6 +71,22 @@ func (b *Board) cli() *resty.Client {
 	return cli
 }
 
+func (b *Board) Status() *Status {
+	cmd := database.RedisCli().Get(context.Background(), p.BoardPrefix.Status(b.UUID))
+	result, err := cmd.Result()
+	if err != nil {
+		return &Status{
+			Status:    StatusOffline,
+			Timestamp: time.Now(),
+		}
+	}
+
+	var stat Status
+	json.NewDecoder(bytes.NewBufferString(result)).Decode(&stat)
+
+	return &stat
+}
+
 func restUrl(b *Board, path ...string) string {
 	u := &url.URL{
 		Scheme: "https",
@@ -94,5 +114,6 @@ func RunTask() {
 
 	for _, b := range boards_ {
 		go fetchSystemResource(b)
+		go fetchSystemStatus(b)
 	}
 }

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/9d4/netpilot/database"
 	"github.com/9d4/netpilot/ros/board"
+	"github.com/9d4/netpilot/ws"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 	jww "github.com/spf13/jwalterweatherman"
-	"log"
 )
 
 // Start ignites the engine
@@ -24,6 +24,8 @@ func Start(config *Config) {
 
 // define routes here
 func applyRoutes(app *fiber.App) {
+	initStores()
+
 	apiRouter := app.Group("/api")
 	apiRouter.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
@@ -43,19 +45,13 @@ func applyRoutes(app *fiber.App) {
 		// IsWebSocketUpgrade returns true if the client
 		// requested upgrade to the WebSocket protocol.
 		if websocket.IsWebSocketUpgrade(c) {
-			c.Locals("allowed", true)
 			return c.Next()
 		}
 		return fiber.ErrUpgradeRequired
 	})
 
+	app.Get("/ws", ws.Handler)
 	app.Get("/ws/boards/:id", websocket.New(func(c *websocket.Conn) {
-		// c.Locals is added to the *websocket.Conn
-		log.Println(c.Locals("allowed"))  // true
-		log.Println(c.Params("id"))       // 123
-		log.Println(c.Query("v"))         // 1.0
-		log.Println(c.Cookies("session")) // ""
-
 		// websocket.Conn bindings https://pkg.go.dev/github.com/fasthttp/websocket?tab=doc#pkg-index
 		pubsub := database.RedisCli().Subscribe(context.Background(), "ch:board:"+c.Params("id")+":system/resource")
 		defer pubsub.Close()

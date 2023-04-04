@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/9d4/netpilot/database"
 	"github.com/9d4/netpilot/server"
+	"github.com/9d4/netpilot/store"
 	"github.com/9d4/netpilot/worker"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
@@ -38,6 +39,7 @@ var rootCmd = &cobra.Command{
 			jww.FATAL.Fatal(err)
 		}
 
+		store.Init(database.DB())
 		worker.RunBoardWorker()
 		server.Start(server.NewConfig(v))
 	},
