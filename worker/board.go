@@ -53,19 +53,14 @@ func RunBoardWorker() {
 	go func() {
 		// make sure Boards filled first
 		<-update
-
-		var wg sync.WaitGroup
-
+		
 		for {
 			for _, b := range Boards.b {
-				wg.Add(1)
 				b := b
 				go func() {
 					board.RunTask(b)
-					wg.Done()
 				}()
 			}
-			wg.Wait()
 			<-time.Tick(boardWorkerInterval)
 		}
 	}()
