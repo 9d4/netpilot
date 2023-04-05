@@ -3,13 +3,10 @@ package ws
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"github.com/9d4/netpilot/store"
+	"github.com/9d4/netpilot/worker"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 var clients = make(map[string]*websocket.Conn)
@@ -69,11 +66,9 @@ func wsHandleGet(conn *websocket.Conn, msg *Message) {
 
 	switch msg.Resource {
 	case ResourceBoardStatus:
-		board, err := store.Board.FindByUUID(msg.BoardID)
+		board, err := worker.Boards.GetByUUID(msg.BoardID)
 		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				wsWriteError(conn, msg, fiber.ErrNotFound)
-			}
+			wsWriteError(conn, msg, fiber.ErrNotFound)
 			return
 		}
 
@@ -86,10 +81,7 @@ func wsHandleGet(conn *websocket.Conn, msg *Message) {
 				Body:     board.Status(),
 			},
 		}
-
-		fmt.Printf("%+v\n", resp)
-		fmt.Printf("%+v\n", resp.Message.Body)
-
+		
 		conn.WriteJSON(resp)
 	}
 

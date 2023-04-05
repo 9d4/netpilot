@@ -1,8 +1,10 @@
 package worker
 
 import (
+	"errors"
 	"github.com/9d4/netpilot/ros/board"
 	"github.com/9d4/netpilot/store"
+	"golang.org/x/exp/slices"
 	"sync"
 	"time"
 )
@@ -13,7 +15,29 @@ const (
 )
 
 // cache the boards
-var boards []*board.Board
+type boardList struct {
+	b  []*board.Board
+	mu sync.Mutex
+}
+
+func (l *boardList) All() []*board.Board {
+	return l.b
+}
+
+func (l *boardList) GetByUUID(uuid string) (*board.Board, error) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	i := slices.IndexFunc(l.b, func(b *board.Board) bool {
+		return b.UUID == uuid
+	})
+	if i == -1 {
+		return nil, errors.New("not found")
+	}
+
+	return l.b[i], nil
+}
+
+var Boards = new(boardList)
 
 func RunBoardWorker() {
 	update := make(chan int)
@@ -27,13 +51,13 @@ func RunBoardWorker() {
 	}()
 
 	go func() {
-		// make sure boards filled first
+		// make sure Boards filled first
 		<-update
 
 		var wg sync.WaitGroup
 
 		for {
-			for _, b := range boards {
+			for _, b := range Boards.b {
 				wg.Add(1)
 				b := b
 				go func() {
@@ -54,5 +78,5 @@ func refreshBoardLists() {
 		return
 	}
 
-	boards = boards_
+	Boards.b = boards_
 }
