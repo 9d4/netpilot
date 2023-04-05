@@ -16,6 +16,11 @@ export interface Board {
   user: string
 }
 
+export interface BoardStatus {
+  status: number,
+  timestamp: string
+}
+
 export interface BoardInfo {
   'architecture-name': string
   'bad-blocks': string

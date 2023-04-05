@@ -40,6 +40,7 @@ const onItemClick = (uuid: string) => {
 
 <template>
   <div class="dropdown dropdown-bottom" :class="{ 'dropdown-open': opened }">
+    
     <label class="btn btn-ghost rounded-btn normal-case" @click="toggle">
       <span>{{ selectedLabel }}</span>
       <span>

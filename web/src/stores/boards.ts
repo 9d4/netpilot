@@ -2,7 +2,7 @@ import { useApi } from '@/composables/api'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import type { Board, BoardOfBoards } from '@/types/board'
+import type { Board, BoardOfBoards, BoardStatus } from '@/types/board'
 
 const saveSelectedBoard = (uuid: string) => {
   return window.localStorage.setItem('selected-board', uuid)
@@ -15,6 +15,7 @@ const getSelectedBoard = () => {
 export const useBoardStore = defineStore('boards', () => {
   const boards = ref<BoardOfBoards[]>([])
   const selected = ref<Board | null>(null)
+  const status = ref<BoardStatus | null>(null)
 
   const getBoardById = computed(
     (state) => (uuid: string) => state.boards.find((b: any) => b.uuid === uuid)
@@ -52,8 +53,12 @@ export const useBoardStore = defineStore('boards', () => {
     }
   }
 
+  function refreshStatus() {
+  }
+
   refreshBoards()
   syncSelected()
+  refreshStatus()
 
-  return { boards, selected, refreshBoards, getBoardById, updateSelected }
+  return { boards, selected, refreshBoards, getBoardById, updateSelected, status, refreshStatus }
 })

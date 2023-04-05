@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import BoardOnlineIndicator from './BoardOnlineIndicator.vue'
 import SelectBoardDropdown from './SelectBoardDropdown.vue'
 </script>
 
@@ -22,6 +23,7 @@ import SelectBoardDropdown from './SelectBoardDropdown.vue'
       </label>
     </div>
     <div class="flex-1">
+      <BoardOnlineIndicator />
       <SelectBoardDropdown />
     </div>
     <div class="flex-none">

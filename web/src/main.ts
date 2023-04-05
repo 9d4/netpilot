@@ -5,7 +5,6 @@ import App from './App.vue'
 import router from './router'
 
 import './assets/base.css'
-import { useBoardStore } from './stores/boards'
 
 const app = createApp(App)
 
@@ -19,7 +18,5 @@ app.provide('wsBaseUrl', wsBaseUrl)
 
 app.use(createPinia())
 app.use(router)
-
-useBoardStore()
 
 app.mount('#app')
