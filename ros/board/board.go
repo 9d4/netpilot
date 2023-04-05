@@ -100,20 +100,7 @@ func restUrl(b *Board, path ...string) string {
 	return u.String()
 }
 
-func RunTask() {
-	go func() {
-		store := NewBoardStore(database.DB())
-		boards, err := store.FindAll()
-		if err != nil {
-			return
-		}
-		boards_ = boards
-
-		time.Sleep(5 * time.Second)
-	}()
-
-	for _, b := range boards_ {
-		go fetchSystemResource(b)
-		go fetchSystemStatus(b)
-	}
+func RunTask(b *Board) {
+	fetchSystemStatus(b)
+	fetchSystemResource(b)
 }
