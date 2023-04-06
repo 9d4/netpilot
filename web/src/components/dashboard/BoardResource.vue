@@ -5,6 +5,9 @@ import { compile, computed, inject, onMounted, ref, unref, watch } from 'vue'
 import { useBoardStore } from '@/stores/boards'
 import { storeToRefs } from 'pinia'
 
+const boardStore = useBoardStore()
+const boardStoreRef = storeToRefs(boardStore)
+
 const selectedBoard = storeToRefs(useBoardStore()).selected
 const wsBaseUrl = inject('wsBaseUrl')
 const wsUrl = ref('')
