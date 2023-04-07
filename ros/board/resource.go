@@ -62,4 +62,5 @@ func fetchSystemStatus(b *Board) {
 	json.NewEncoder(&statusDataJson).Encode(statusData)
 
 	database.RedisCli().Set(context.Background(), p.BoardPrefix.Status(b.UUID), statusDataJson.String(), redis.KeepTTL)
+	database.RedisCli().Publish(context.Background(), p.BoardChannelPrefix.Status(b.UUID), statusDataJson.String())
 }

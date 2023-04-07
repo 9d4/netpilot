@@ -5,7 +5,8 @@ package prefix
 import "fmt"
 
 const (
-	BoardPrefix keyPrefix = "board:"
+	BoardPrefix        keyPrefix = "board:"
+	BoardChannelPrefix keyPrefix = "ch:board:"
 )
 
 type keyPrefix string

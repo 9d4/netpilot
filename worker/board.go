@@ -53,7 +53,7 @@ func RunBoardWorker() {
 	go func() {
 		// make sure Boards filled first
 		<-update
-		
+
 		for {
 			for _, b := range Boards.b {
 				b := b
