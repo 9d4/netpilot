@@ -9,3 +9,8 @@ export const handleResource = (event: MessageEvent, json: any) => {
       break
   }
 }
+
+export const handleOnOpen = (event: Event) => {
+
+}
+

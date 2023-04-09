@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { useBoardStore } from '@/stores/boards'
-import type { BoardStatus } from '@/types/board'
+import type { Board, BoardStatus } from '@/types/board'
 import ws from '@/ws'
 import { storeToRefs } from 'pinia'
-import { onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const boardStore = useBoardStore()
 const boardStoreRef = storeToRefs(boardStore)
@@ -21,13 +21,23 @@ watch(
   { immediate: 1 == 1 }
 )
 
-const interval = setInterval(() => {
-  ws.fetchBoardStatus()
-}, 1000)
+const updateSubscription = (old?:Board) => {
+  if (old !== undefined && old !== null) {
+    ws.unsubscribeBoardStatus(old.uuid)
+  }
 
-onUnmounted(() => {
-  clearInterval(interval)
-})
+  ws.subscribeBoardStatus(boardStoreRef.selected.value?.uuid!)
+}
+
+const wsState = ref(ws.state)
+watch(wsState, () => updateSubscription(), { immediate: 1 == 1 })
+watch(
+  boardStoreRef.selected,
+  (_, old) => {
+    updateSubscription(old!)
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
