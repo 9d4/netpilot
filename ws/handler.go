@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/9d4/netpilot/database"
 	p "github.com/9d4/netpilot/internal/prefix"
 	"github.com/9d4/netpilot/ros/board"
@@ -189,7 +188,6 @@ func handleSubBoardStatus(conn *Conn, msg *Message) {
 }
 
 func handleUnsubBoardStatus(conn *Conn, msg *Message) {
-	fmt.Println(subscribers)
 	b, err := worker.Boards.GetByUUID(msg.BoardID)
 	if err != nil {
 		wsWriteError(conn, msg, fiber.ErrNotFound)
@@ -207,6 +205,4 @@ func handleUnsubBoardStatus(conn *Conn, msg *Message) {
 		},
 		Status: StatusOK,
 	})
-
-	fmt.Println(subscribers)
 }

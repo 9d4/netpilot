@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/exp/slices"
+	"sync"
 )
 
 type subscriber struct {
@@ -13,6 +14,7 @@ type subscriber struct {
 }
 
 var subscribers []*subscriber
+var submu sync.Mutex
 
 func unsub(conn *Conn, channel string) {
 	for i, s := range subscribers {
@@ -30,6 +32,8 @@ func unsub(conn *Conn, channel string) {
 }
 
 func removeAnySubscriber(conn *Conn) {
+	submu.Lock()
+	defer submu.Unlock()
 	for i, s := range subscribers {
 		if s == nil {
 			continue

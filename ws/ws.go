@@ -22,7 +22,8 @@ const (
 type ResourceType string
 
 const (
-	ResourceBoardStatus ResourceType = "board:status"
+	ResourceBoardStatus   ResourceType = "board:status"
+	ResourceBoardResource ResourceType = "board:resource"
 )
 
 type Message struct {
