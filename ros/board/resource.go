@@ -49,8 +49,13 @@ func fetchSystemStatus(b *Board) {
 		status = StatusOffline
 	}
 
-	if res.StatusCode() != fiber.StatusOK {
+	switch res.StatusCode() {
+	case fiber.StatusOK:
+		status = StatusOnline
+	case fiber.StatusUnauthorized:
 		status = StatusUnauthorized
+	default:
+		status = StatusOffline
 	}
 
 	statusData := &Status{
