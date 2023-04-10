@@ -14,6 +14,7 @@ export interface Board {
   port: string
   insecure_skip_verify: boolean
   user: string
+  password: string
 }
 
 export interface BoardStatus {

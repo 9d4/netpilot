@@ -3,6 +3,7 @@ import DashNav from '@/components/dashboard/DashNav.vue'
 </script>
 
 <template>
+  <slot name="modal" />
   <div class="drawer drawer-mobile">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content">
@@ -18,9 +19,9 @@ import DashNav from '@/components/dashboard/DashNav.vue'
         <li>
           <RouterLink to="/dashboard" active-class="active">Dashboard</RouterLink>
         </li>
-        <!-- <li> -->
-          <!-- <RouterLink to="/dashboard/boards" active-class="active">Boards</RouterLink> -->
-        <!-- </li> -->
+        <li>
+          <RouterLink to="/dashboard/boards" active-class="active">Boards</RouterLink>
+        </li>
       </ul>
     </div>
   </div>
