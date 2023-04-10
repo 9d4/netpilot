@@ -6,14 +6,15 @@ import (
 	"encoding/json"
 	"github.com/9d4/netpilot/database"
 	p "github.com/9d4/netpilot/internal/prefix"
+	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"net"
 	"time"
 )
 
 const (
 	StatusOffline = iota
 	StatusOnline
+	StatusUnauthorized
 )
 
 type Status struct {
@@ -42,15 +43,14 @@ func fetchSystemResource(b *Board) {
 }
 
 func fetchSystemStatus(b *Board) {
-	// simply accessing random or /rest will return something.
-	// at least not network error, it means that board is online
 	status := StatusOnline
-	_, err := b.cli().R().Get(restUrl(b, "/"))
+	res, err := b.cli().R().Get(restUrl(b, "/system/identity"))
 	if err != nil {
 		status = StatusOffline
-		if _, ok := err.(net.Error); !ok {
-			status = StatusOnline
-		}
+	}
+
+	if res.StatusCode() != fiber.StatusOK {
+		status = StatusUnauthorized
 	}
 
 	statusData := &Status{
