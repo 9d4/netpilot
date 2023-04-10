@@ -102,6 +102,7 @@ func (h *Handler) GetAllBoards(c *fiber.Ctx) error {
 }
 
 func (h *Handler) GetBoardByUUID(c *fiber.Ctx) error {
+	detailed := c.Query("detail") == "1"
 	// Get board UUID from path parameter
 	uuid := c.Params("uuid")
 
@@ -109,6 +110,10 @@ func (h *Handler) GetBoardByUUID(c *fiber.Ctx) error {
 	board := &Board{}
 	if err := h.db.Where("uuid = ?", uuid).First(&board).Error; err != nil {
 		return fiber.ErrNotFound
+	}
+
+	if detailed {
+		return c.JSON(board.Detail())
 	}
 
 	return c.JSON(board)

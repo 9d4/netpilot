@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/9d4/netpilot/database"
 	p "github.com/9d4/netpilot/internal/prefix"
 	"github.com/go-resty/resty/v2"
+	dynamicstruct "github.com/ompluscator/dynamic-struct"
 	"gorm.io/gorm"
 	"net/url"
 	"time"
@@ -85,6 +87,32 @@ func (b *Board) Status() *Status {
 	json.NewDecoder(bytes.NewBufferString(result)).Decode(&stat)
 
 	return &stat
+}
+
+// Pwd returns base64 version of Board.Password
+func (b *Board) Pwd() string {
+	return base64.StdEncoding.WithPadding(base64.NoPadding).EncodeToString([]byte(b.Password))
+}
+
+// Detail return all fields of Board, including
+// which is tagged `-`
+func (b *Board) Detail() interface{} {
+	b.Password = b.Pwd()
+
+	detailedBoard := dynamicstruct.
+		MergeStructs(b).
+		RemoveField("Password").
+		AddField("Password", "", `json:"password"`).
+		Build().
+		New()
+	reader := dynamicstruct.NewReader(b)
+
+	err := reader.ToStruct(detailedBoard)
+	if err != nil {
+		return nil
+	}
+
+	return detailedBoard
 }
 
 func restUrl(b *Board, path ...string) string {
