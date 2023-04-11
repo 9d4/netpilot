@@ -14,6 +14,7 @@ const showPwd = ref(false)
 const disabled = ref(true)
 const updateErrors = ref<any>({})
 const updateSuccess = ref(false)
+const connCheckStatus = ref('')
 
 const props = defineProps({
   uuid: { type: String }
@@ -67,6 +68,31 @@ const updateBoard = () => {
     .finally(() => {
       updating.value = false
       disabled.value = false
+    })
+}
+
+const checkConnection = () => {
+  connCheckStatus.value = 'loading...'
+  useBoardsApi()
+    .extend('check', {
+      method: 'post',
+      data: {
+        ...board.value
+      }
+    })
+    .then(({ status }) => {
+      if (status === 200) {
+        connCheckStatus.value = 'OK'
+      }
+    })
+    .catch((err: AxiosError) => {
+      let msg = (m: any) => `Fail: ${m}`
+      if (err.code != AxiosError.ERR_NETWORK) {
+        connCheckStatus.value = msg(err.response?.status)
+        return
+      }
+      
+      connCheckStatus.value = msg(err.message)
     })
 }
 
@@ -219,8 +245,20 @@ onMounted(() => {
           </div>
         </div>
 
+        <div class="form-control w-full my-4">
+          <div class="input-group">
+            <input
+              v-model="connCheckStatus"
+              disabled
+              type="text"
+              class="input input-sm input-bordered w-full"
+            />
+            <button class="btn btn-sm" @click="checkConnection">Check Connection</button>
+          </div>
+        </div>
+
         <div class="my-4">
-          <div v-if="updateErrors.errors != undefined" class="alert alert-error my-2 ">
+          <div v-if="updateErrors.errors != undefined" class="alert alert-error my-2">
             <ul class="block">
               <li v-for="a in updateErrors?.errors" :key="a.field">{{ a.field }} is {{ a.tag }}</li>
             </ul>

@@ -15,7 +15,7 @@ const router = createRouter({
     },
     {
       path: '/dashboard/boards/:uuid?',
-      component: defineAsyncComponent(() => import('@/views/dashboard/board/BoardIndex.vue'))
+      component: () => import('@/views/dashboard/board/BoardIndex.vue')
     }
   ]
 })
