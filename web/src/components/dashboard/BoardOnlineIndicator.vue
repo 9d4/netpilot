@@ -43,7 +43,7 @@ watch(
 <template>
   <span
     class="rounded-full w-2 h-2 mx-2 hover:cursor-pointer"
-    :class="{ 'bg-green-400': online.status, 'bg-red-400': !online.status }"
+    :class="{'bg-warning': online.status == 2, 'bg-green-400': online.status == 1, 'bg-red-400': online.status == 0 }"
     :title="timestamp?.toLocaleDateString() + ' ' + timestamp?.toLocaleTimeString()"
   ></span>
 </template>
