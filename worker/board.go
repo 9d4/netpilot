@@ -41,11 +41,14 @@ var Boards = new(boardList)
 
 func RunBoardWorker() {
 	update := make(chan int)
+	o := sync.Once{}
 
 	go func() {
 		for {
 			refreshBoardLists()
-			update <- 1
+			o.Do(func() {
+				update <- 1
+			})
 			<-time.Tick(refreshBoardInterval)
 		}
 	}()
@@ -55,7 +58,8 @@ func RunBoardWorker() {
 		<-update
 
 		for {
-			for _, b := range Boards.b {
+			boards := Boards.b
+			for _, b := range boards {
 				b := b
 				go func() {
 					board.RunTask(b)
