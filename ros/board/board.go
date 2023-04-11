@@ -62,6 +62,14 @@ type BoardsEachResponse struct {
 	Port string `json:"port"`
 }
 
+type CheckConnRequest struct {
+	Host               string `json:"host" validate:"required"`
+	Port               string `json:"port" validate:"required"`
+	InsecureSkipVerify bool   `json:"insecure_skip_verify"`
+	User               string `json:"user" validate:"required"`
+	Password           string `json:"password"`
+}
+
 // cli returns new *resty.Client
 func (b *Board) cli() *resty.Client {
 	cli := resty.New()

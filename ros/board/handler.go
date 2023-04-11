@@ -8,6 +8,7 @@ import (
 	jww "github.com/spf13/jwalterweatherman"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type Handler struct {
@@ -30,6 +31,7 @@ func (h *Handler) SetupRoutes(router fiber.Router) {
 
 	// Map routes to handlers
 	boardRouter.Post("", h.CreateBoard)
+	boardRouter.Post("/check", h.CheckConn)
 	boardRouter.Get("", h.GetAllBoards)
 	boardRouter.Get("/:uuid", h.GetBoardByUUID)
 	boardRouter.Put("/:uuid", h.UpdateBoard)
@@ -169,6 +171,35 @@ func (h *Handler) DeleteBoard(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (h *Handler) CheckConn(c *fiber.Ctx) error {
+	var req CheckConnRequest
+
+	if c.BodyParser(&req) != nil {
+		return fiber.ErrBadRequest
+	}
+	if err := h.validator.Struct(req); err != nil {
+		return h.validationErrorResponse(c, err.(validator.ValidationErrors))
+	}
+
+	board := &Board{
+		Host:               req.Host,
+		Port:               req.Port,
+		InsecureSkipVerify: req.InsecureSkipVerify,
+		User:               req.User,
+		Password:           req.Password,
+	}
+	res, err := board.cli().SetTimeout(time.Second * 5).R().Get(restUrl(board, "/system/identity"))
+	if err != nil {
+		return fiber.ErrFailedDependency
+	}
+	if res.StatusCode() != 200 {
+		return fiber.ErrFailedDependency
+	}
+
+	c.Status(fiber.StatusOK)
+	return nil
 }
 
 func (h *Handler) validationErrorResponse(c *fiber.Ctx, validationErrors validator.ValidationErrors) error {
