@@ -3,6 +3,7 @@ module github.com/9d4/netpilot
 go 1.19
 
 require (
+	github.com/docker/docker v23.0.3+incompatible
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gofiber/fiber/v2 v2.42.0

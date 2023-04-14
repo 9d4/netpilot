@@ -2,6 +2,7 @@ package board
 
 import (
 	"github.com/9d4/netpilot/util"
+	"github.com/docker/docker/pkg/namesgenerator"
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -39,29 +40,46 @@ func (h *Handler) SetupRoutes(router fiber.Router) {
 }
 
 func (h *Handler) CreateBoard(c *fiber.Ctx) error {
-	// Parse input
-	var input CreateBoardRequest
-	if err := c.BodyParser(&input); err != nil {
-		return err
-	}
-
+	fastmode := c.Query("quick") == "1"
 	// Generate UUID
 	uuid := uuid.New().String()
 
-	// Validate input using validator
-	if err := h.validator.Struct(input); err != nil {
-		return h.validationErrorResponse(c, err.(validator.ValidationErrors))
+	var board *Board
+	if !fastmode {
+		// Parse input
+		var input CreateBoardRequest
+		if err := c.BodyParser(&input); err != nil {
+			return err
+		}
+
+		// Validate input using validator
+		if err := h.validator.Struct(input); err != nil {
+			return h.validationErrorResponse(c, err.(validator.ValidationErrors))
+		}
+
+		// Create board in database
+		board = &Board{
+			UUID:               uuid,
+			Host:               input.Host,
+			Port:               input.Port,
+			InsecureSkipVerify: input.InsecureSkipVerify,
+			User:               input.User,
+			Password:           input.Password,
+		}
 	}
 
-	// Create board in database
-	board := &Board{
-		UUID:               uuid,
-		Host:               input.Host,
-		Port:               input.Port,
-		InsecureSkipVerify: input.InsecureSkipVerify,
-		User:               input.User,
-		Password:           input.Password,
+	if fastmode {
+		board = &Board{
+			UUID:               uuid,
+			Name:               namesgenerator.GetRandomName(0),
+			Host:               "0.0.0.0",
+			Port:               "443",
+			InsecureSkipVerify: true,
+			User:               "admin",
+			Password:           "",
+		}
 	}
+
 	if err := h.db.Create(board).Error; err != nil {
 		jww.TRACE.Println(err)
 		return fiber.ErrInternalServerError
