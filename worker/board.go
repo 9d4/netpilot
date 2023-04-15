@@ -2,16 +2,17 @@ package worker
 
 import (
 	"errors"
+	"sync"
+	"time"
+
 	"github.com/9d4/netpilot/ros/board"
 	"github.com/9d4/netpilot/store"
 	"golang.org/x/exp/slices"
-	"sync"
-	"time"
 )
 
 const (
 	refreshBoardInterval = time.Second * 10
-	boardWorkerInterval  = time.Second
+	boardWorkerInterval  = time.Second * 5
 )
 
 // cache the boards
