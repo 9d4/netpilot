@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/9d4/netpilot/database"
-	p "github.com/9d4/netpilot/internal/prefix"
+	p "github.com/9d4/netpilot/prefix"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"time"
 )
 
 const (

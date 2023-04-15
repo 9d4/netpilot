@@ -6,13 +6,14 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
+	"net/url"
+	"time"
+
 	"github.com/9d4/netpilot/database"
-	p "github.com/9d4/netpilot/internal/prefix"
+	p "github.com/9d4/netpilot/prefix"
 	"github.com/go-resty/resty/v2"
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
 	"gorm.io/gorm"
-	"net/url"
-	"time"
 )
 
 // Board is model of router boards

@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+
 	"github.com/9d4/netpilot/database"
-	p "github.com/9d4/netpilot/internal/prefix"
+	p "github.com/9d4/netpilot/prefix"
 	"github.com/9d4/netpilot/ros/board"
 	"github.com/9d4/netpilot/worker"
 	"github.com/gofiber/fiber/v2"
