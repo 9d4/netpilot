@@ -26,7 +26,6 @@ var Handler = websocket.New(func(conn *websocket.Conn) {
 	}
 	go c.run()
 
-	defer c.conn().Close()
 	defer delete(clients, cID.String())
 
 	var (
@@ -37,8 +36,6 @@ var Handler = websocket.New(func(conn *websocket.Conn) {
 
 	for {
 		if mt, msg, err = c.conn().ReadMessage(); err != nil {
-			// clear from subscribers list if exist
-			removeAnySubscriber(c)
 			c.close()
 			break
 		}
@@ -58,8 +55,6 @@ var Handler = websocket.New(func(conn *websocket.Conn) {
 			wsHandleGet(c, &parsedMsg)
 		case TypeSub:
 			handleSub(c, &parsedMsg)
-		case TypeUnsub:
-			handleUnsub(c, &parsedMsg)
 		}
 	}
 })
@@ -118,27 +113,7 @@ func handleSub(conn *Conn, msg *Message) {
 	}
 }
 
-func handleUnsub(conn *Conn, msg *Message) {
-	if msg.BoardID == "" || msg.Resource == "" {
-		wsWriteError(conn, msg, fiber.ErrBadRequest)
-		return
-	}
-
-	switch msg.Resource {
-	case ResourceBoardStatus:
-		handleUnsubBoardStatus(conn, msg)
-	default:
-		wsWriteError(conn, msg, fiber.ErrBadRequest)
-	}
-}
-
 func handleSubBoardStatus(conn *Conn, msg *Message) {
-	for _, s := range subscribers {
-		if s.conn == conn {
-			return
-		}
-	}
-
 	b, err := worker.Boards.GetByUUID(msg.BoardID)
 	if err != nil {
 		wsWriteError(conn, msg, fiber.ErrNotFound)
@@ -154,17 +129,13 @@ func handleSubBoardStatus(conn *Conn, msg *Message) {
 		},
 		Status: StatusOK,
 	}
-
+	ready := make(chan byte, 1)
 	go func() {
 		channel := p.BoardChannelPrefix.Status(b.UUID)
 		pubsub := database.RedisCli().Subscribe(context.Background(), channel)
 		defer pubsub.Close()
+		ready <- 1
 
-		subscribers = append(subscribers, &subscriber{
-			conn:    conn,
-			channel: channel,
-			pubsub:  pubsub,
-		})
 		for m := range pubsub.Channel() {
 			if conn.closed {
 				return
@@ -185,25 +156,6 @@ func handleSubBoardStatus(conn *Conn, msg *Message) {
 		}
 	}()
 
+	<-ready
 	conn.writeJson(resp)
-}
-
-func handleUnsubBoardStatus(conn *Conn, msg *Message) {
-	b, err := worker.Boards.GetByUUID(msg.BoardID)
-	if err != nil {
-		wsWriteError(conn, msg, fiber.ErrNotFound)
-		return
-	}
-
-	channel := p.BoardChannelPrefix.Status(b.UUID)
-	unsub(conn, channel)
-
-	conn.writeJson(MessageResponse{
-		Message: Message{
-			Type:     TypeUnsub,
-			Resource: ResourceBoardStatus,
-			BoardID:  b.UUID,
-		},
-		Status: StatusOK,
-	})
 }

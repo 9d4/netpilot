@@ -1,8 +1,9 @@
 package ws
 
 import (
-	"github.com/gofiber/websocket/v2"
 	"sync"
+
+	"github.com/gofiber/websocket/v2"
 )
 
 type MsgType string
