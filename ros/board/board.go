@@ -18,12 +18,12 @@ import (
 
 // Board is model of router boards
 type Board struct {
-	ID        uint           `json:"-" gorm:"primarykey"`
+	ID        uint           `json:"-"          gorm:"primarykey"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	DeletedAt gorm.DeletedAt `json:"-"          gorm:"index"`
 
-	UUID string `json:"uuid" gorm:"index,unique"`
+	UUID string `json:"uuid"                 gorm:"index,unique"`
 	// Name of the board
 	Name string `json:"name"`
 	// Host of the board
@@ -39,11 +39,11 @@ type Board struct {
 }
 
 type CreateBoardRequest struct {
-	Name               string `json:"name" validate:"required"`
-	Host               string `json:"host" validate:"required"`
-	Port               string `json:"port" validate:"required"`
+	Name               string `json:"name"                 validate:"required"`
+	Host               string `json:"host"                 validate:"required"`
+	Port               string `json:"port"                 validate:"required"`
 	InsecureSkipVerify bool   `json:"insecure_skip_verify"`
-	User               string `json:"user" validate:"required"`
+	User               string `json:"user"                 validate:"required"`
 	Password           string `json:"password"`
 }
 
@@ -64,10 +64,10 @@ type BoardsEachResponse struct {
 }
 
 type CheckConnRequest struct {
-	Host               string `json:"host" validate:"required"`
-	Port               string `json:"port" validate:"required"`
+	Host               string `json:"host"                 validate:"required"`
+	Port               string `json:"port"                 validate:"required"`
 	InsecureSkipVerify bool   `json:"insecure_skip_verify"`
-	User               string `json:"user" validate:"required"`
+	User               string `json:"user"                 validate:"required"`
 	Password           string `json:"password"`
 }
 
@@ -80,6 +80,10 @@ func (b *Board) cli() *resty.Client {
 	cli.SetTimeout(time.Second * 10)
 
 	return cli
+}
+
+func (b *Board) Cli() *resty.Client {
+	return b.cli()
 }
 
 func (b *Board) Status() *Status {
@@ -122,6 +126,10 @@ func (b *Board) Detail() interface{} {
 	}
 
 	return detailedBoard
+}
+
+func (b *Board) Url(path ...string) string {
+	return restUrl(b, path...)
 }
 
 func restUrl(b *Board, path ...string) string {
