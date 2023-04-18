@@ -1,6 +1,9 @@
 package board
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/9d4/netpilot/util"
 	"github.com/docker/docker/pkg/namesgenerator"
 	"github.com/go-playground/validator"
@@ -8,8 +11,6 @@ import (
 	"github.com/google/uuid"
 	jww "github.com/spf13/jwalterweatherman"
 	"gorm.io/gorm"
-	"strconv"
-	"time"
 )
 
 type Handler struct {
@@ -18,8 +19,6 @@ type Handler struct {
 }
 
 func NewBoardHandler(db *gorm.DB) *Handler {
-	db.AutoMigrate(&Board{})
-
 	return &Handler{
 		db:        db,
 		validator: validator.New(),

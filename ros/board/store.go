@@ -16,6 +16,7 @@ type store struct {
 }
 
 func NewBoardStore(db *gorm.DB) Store {
+	db.AutoMigrate(store{})
 	return &store{db: db}
 }
 
